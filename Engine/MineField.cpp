@@ -13,23 +13,49 @@ MineField::MineField(int nMines)
 	{
 		const int pos = yDist(rng) * width + xDist(rng);
 		Vei2 tileDisplacement = origin + Vei2(xDist(rng), yDist(rng));
-		if(field[pos].hasMine)
-			field[pos].SpawnMine(tileDisplacement);
+		field[pos].hasMine = true;
 	}
 }
 
 void MineField::Update()
 {
+
 }
 
 void MineField::DrawMineField(Graphics& gfx)
 {
-	Vei2 origin(100, 200);
+	Vei2 origin(250,200);
+	//Draw Rctangle
+	gfx.DrawRect(GetRect(), SpriteCodex::baseColor);
+	//Draw Grid
 	for (int y = 0; y < height; y++) {
 		for (int x = 0; x < width; x++) {
 			Vei2 tileDisplacement = origin + Vei2(x, y)*SpriteCodex::tileSize;
-			field[y * width + x].DrawTile(gfx,tileDisplacement);
+			const int pos = y * width + x;
+			field[pos].DrawTile(gfx,tileDisplacement);
 		}
+	}
+}
+
+RectI MineField::GetRect()
+{
+	return RectI(Vei2(250,200), width*SpriteCodex::tileSize, height*SpriteCodex::tileSize);
+}
+
+void MineField::Reveal(Mouse& mouse)
+{
+	int x=mouse.GetPosX();
+	int y = mouse.GetPosY();
+	Vei2 pos(x, y);
+	pos -= Vei2(250, 200);
+	pos /= SpriteCodex::tileSize;
+	if (mouse.LeftIsPressed()&& field[pos.y*width +pos.x].state!=Tile::State::Flagged)
+	{
+		field[pos.y * width + pos.x].state = Tile::State::Revealed;
+	}
+	if (mouse.RightIsPressed() && field[pos.y * width + pos.x].state != Tile::State::Flagged)
+	{
+		field[pos.y * width + pos.x].state = Tile::State::Flagged;
 	}
 }
 
@@ -48,7 +74,7 @@ void MineField::Tile::DrawTile(Graphics& gfx,Vei2& pos)
 		if (!hasMine) {
 			SpriteCodex::DrawTile0(pos, gfx);
 		}
-		else {
+		else if(hasMine) {
 			SpriteCodex::DrawTileBomb(pos, gfx);
 		}
 
@@ -56,18 +82,9 @@ void MineField::Tile::DrawTile(Graphics& gfx,Vei2& pos)
 	case(Tile::State::Hidden):
 	{
 		SpriteCodex::DrawTileButton(pos, gfx);
+		
 	}
 	break;
 	}
 }
 
-MineField::Tile::Tile(const Vei2 size_in)
-{
-}
-
-void MineField::Tile::SpawnMine(const Vei2 pos)
-{
-	assert(!hasMine);
-	hasMine = true;
-	
-}

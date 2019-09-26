@@ -4,6 +4,7 @@
 #include<random>
 #include "RectI.h"
 #include"Graphics.h"
+#include"Mouse.h"
 class MineField
 {
 public:
@@ -20,8 +21,6 @@ public:
 
 	public:
 		Tile() = default;
-		Tile(const Vei2 size_in);
-		void SpawnMine(const Vei2 pos);
 		void DrawTile(Graphics& gfx, Vei2& pos);
 	public:
 		State state = State::Hidden;
@@ -31,6 +30,8 @@ public:
 	MineField(int nMines);
 	void Update();
 	void DrawMineField(Graphics& gfx);
+	RectI GetRect();
+	void Reveal(Mouse& mouse);
 private:
 	static constexpr int width = 20;
 	static constexpr int height = 16;

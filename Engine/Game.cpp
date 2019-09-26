@@ -39,6 +39,7 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
+	mineField.Reveal(wnd.mouse);
 }
 
 void Game::ComposeFrame()
