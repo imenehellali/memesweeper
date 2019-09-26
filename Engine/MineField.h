@@ -5,6 +5,7 @@
 #include "RectI.h"
 #include"Graphics.h"
 #include"Mouse.h"
+#include <algorithm>
 class MineField
 {
 public:
@@ -25,6 +26,7 @@ public:
 	public:
 		State state = State::Hidden;
 		bool hasMine = false;
+		int adjacentMinesNum = -1;
 	};
 public:
 	MineField(int nMines);
@@ -32,6 +34,7 @@ public:
 	void DrawMineField(Graphics& gfx);
 	RectI GetRect();
 	void Reveal(Mouse& mouse);
+	int AdjacentMines(Vei2& pos);
 private:
 	static constexpr int width = 20;
 	static constexpr int height = 16;

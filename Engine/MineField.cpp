@@ -32,6 +32,8 @@ void MineField::DrawMineField(Graphics& gfx)
 		for (int x = 0; x < width; x++) {
 			Vei2 tileDisplacement = origin + Vei2(x, y)*SpriteCodex::tileSize;
 			const int pos = y * width + x;
+			Vei2 posVec(x, y);
+			field[pos].adjacentMinesNum = AdjacentMines(posVec);
 			field[pos].DrawTile(gfx,tileDisplacement);
 		}
 	}
@@ -72,7 +74,7 @@ void MineField::Tile::DrawTile(Graphics& gfx,Vei2& pos)
 	case(Tile::State::Revealed):
 	{
 		if (!hasMine) {
-			SpriteCodex::DrawTile0(pos, gfx);
+			SpriteCodex::DrawTileNUmber(pos, adjacentMinesNum, gfx);
 		}
 		else if(hasMine) {
 			SpriteCodex::DrawTileBomb(pos, gfx);
@@ -82,9 +84,25 @@ void MineField::Tile::DrawTile(Graphics& gfx,Vei2& pos)
 	case(Tile::State::Hidden):
 	{
 		SpriteCodex::DrawTileButton(pos, gfx);
-		
 	}
 	break;
 	}
+}
+
+int MineField::AdjacentMines(Vei2& pos)
+{
+	int count = -1;
+	const int xStart = std::max(0, pos.x - 1);
+	const int yStart = std::max(0, pos.y - 1);
+	const int xEnd = std::min(width - 1, pos.x + 1);
+	const int yEnd = std::min(height - 1, pos.y + 1);
+
+	for (int y = yStart; y < yEnd; y++) {
+		for (int x = xStart; x < xEnd; x++) {
+			if (field[pos.y * width + pos.x].hasMine)
+				++count;
+		}
+	}
+	return count;
 }
 
